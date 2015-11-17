@@ -12,7 +12,7 @@ defmodule Tradie do
     } |> start_tasks(funs)
   end
 
-  defp start_tasks( %{work_ref: work_ref, supervisor: supervisor} = tradie, funs) do
+  defp start_tasks(tradie = %Tradie{work_ref: work_ref, supervisor: supervisor}, funs) do
     %Tradie{tradie | tasks: Enum.map(
       funs, &Tradie.Task.create_task(work_ref, supervisor, &1)
     )}
