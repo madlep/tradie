@@ -15,7 +15,7 @@ defmodule Tradie do
     )}
   end
 
-  def await(%Tradie{work_ref: work_ref, tasks: tasks}, _timeout \\ 5000) do
-    Enum.map(tasks, &Tradie.Task.receive_result(work_ref, &1))
+  def await(%Tradie{tasks: tasks}, _timeout \\ 5000) do
+    Enum.map(tasks, &Tradie.Task.receive_result(&1))
   end
 end

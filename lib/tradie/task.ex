@@ -27,7 +27,7 @@ defmodule Tradie.Task do
 
   defp do_run_task(fun) when is_function(fun), do: fun.()
 
-  def receive_result(work_ref, %Tradie.Task{work_ref: work_ref, task_ref: task_ref}) do
+  def receive_result(%Tradie.Task{work_ref: work_ref, task_ref: task_ref}) do
     receive do
       %Result{work_ref: ^work_ref, task_ref: ^task_ref, result: result} -> {:ok, result}
     end
