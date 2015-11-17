@@ -8,8 +8,7 @@ defmodule Tradie do
 
     %Tradie{
       work_ref: make_ref,
-      tasks: [],
-      supervisor: supervisor
+      supervisor: supervisor,
     } |> start_tasks(funs)
   end
 
