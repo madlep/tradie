@@ -18,7 +18,7 @@ defmodule Tradie.Task do
 
   def receive_result(work_ref, task_ref) do
     receive do
-      {^work_ref, ^task_ref, result} -> result
+      {^work_ref, ^task_ref, result} -> {:ok, result}
     end
   end
 end

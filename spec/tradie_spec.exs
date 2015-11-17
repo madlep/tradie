@@ -23,6 +23,6 @@ defmodule TradieSpec do
 
 
     results = Tradie.await(tradie_tasks)
-    expect(results).to eq(["foo", "bar"])
+    expect(results).to eq([{:ok, "foo"}, {:ok, "bar"}])
   end
 end
