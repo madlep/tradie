@@ -13,7 +13,7 @@ defmodule Tradie.Task do
       fun: fun
     }
 
-    {:ok, pid} = Task.Supervisor.start_child(
+    {:ok, _pid} = Task.Supervisor.start_child(
       supervisor,
       __MODULE__, :run_task, [task]
     )
