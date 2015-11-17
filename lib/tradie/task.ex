@@ -21,8 +21,11 @@ defmodule Tradie.Task do
   end
 
   def run_task(%Tradie.Task{work_ref: work_ref, task_ref: task_ref, caller: caller, fun: fun}) do
-    result = %Result{work_ref: work_ref, task_ref: task_ref, result: do_run_task(fun)}
-    send(caller, result)
+    send(caller, %Result{
+      work_ref: work_ref,
+      task_ref: task_ref,
+      result: do_run_task(fun)
+    })
   end
 
   defp do_run_task(fun) when is_function(fun), do: fun.()
