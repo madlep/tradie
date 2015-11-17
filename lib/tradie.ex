@@ -19,17 +19,9 @@ defmodule Tradie do
     )}
   end
 
-  def await(tradie, _timeout \\ 5000) do
-    accumulate_results(tradie, [])
-  end
-
-  defp accumulate_results(%Tradie{tasks: []}, results), do: :lists.reverse(results)
-
-  defp accumulate_results(tradie = %Tradie{
-    work_ref: work_ref,
-    tasks: [task | tasks]
-  }, results) do
-    result = Tradie.Task.receive_result(work_ref, task)
-    accumulate_results(%Tradie{tradie | tasks: tasks}, [result | results])
+  def await(%Tradie{work_ref: work_ref, tasks: tasks}, _timeout \\ 5000) do
+    Enum.map(tasks, &(
+      Tradie.Task.receive_result(work_ref, &1)
+    ))
   end
 end
