@@ -21,7 +21,10 @@ defmodule Tradie do
 
   def await(tradie = %Tradie{tasks: tasks, work_ref: work_ref}, timeout \\ 5000) do
     :timer.send_after(timeout, {:timeout, work_ref})
-    final_tradie = tasks |> Enum.reduce(tradie, &(TTask.receive_result(&1, &2)))
-    final_tradie.results |> Enum.reverse
+
+    tasks
+    |> Enum.reduce(tradie, &(TTask.receive_result(&1, &2)))
+    |> Map.fetch!(:results)
+    |> Enum.reverse
   end
 end
