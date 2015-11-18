@@ -28,9 +28,21 @@ defmodule Tradie.Task do
 
   defp do_run_task(fun) when is_function(fun), do: fun.()
 
-  def receive_result(%Tradie.Task{work_ref: work_ref, task_ref: task_ref}) do
+  def receive_result(%Tradie.Task{work_ref: work_ref, task_ref: task_ref}, tradie = %Tradie{timed_out: false, results: results}) do
     receive do
-      %Result{work_ref: ^work_ref, task_ref: ^task_ref, result: result} -> {:ok, result}
+      %Result{work_ref: ^work_ref, task_ref: ^task_ref, result: result} ->
+        %Tradie{tradie | results: [{:ok, result}|results]}
+      {:timeout, ^work_ref} ->
+        %Tradie{tradie | results: [{:error, :timed_out}|results], timed_out: true}
+    end
+  end
+
+  def receive_result(%Tradie.Task{work_ref: work_ref, task_ref: task_ref}, tradie = %Tradie{timed_out: true, results: results}) do
+    receive do
+      %Result{work_ref: ^work_ref, task_ref: ^task_ref, result: result} ->
+        %Tradie{tradie | results: [{:ok, result}|results]}
+    after 0 ->
+      %Tradie{tradie | results: [{:error, :timed_out}|results]}
     end
   end
 end

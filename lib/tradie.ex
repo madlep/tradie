@@ -1,7 +1,9 @@
 defmodule Tradie do
   defstruct work_ref: nil,
             tasks: [],
-            supervisor: nil
+            supervisor: nil,
+            timed_out: false,
+            results: []
 
   def async(funs) do
     {:ok, supervisor} = Task.Supervisor.start_link(restart: :transient)
@@ -15,7 +17,9 @@ defmodule Tradie do
     }
   end
 
-  def await(%Tradie{tasks: tasks}, _timeout \\ 5000) do
-    tasks |> Enum.map(&Tradie.Task.receive_result(&1))
+  def await(tradie = %Tradie{tasks: tasks, work_ref: work_ref}, timeout \\ 5000) do
+    :timer.send_after(timeout, {:timeout, work_ref})
+    final_tradie = tasks |> Enum.reduce(tradie, fn(task, current_tradie) -> Tradie.Task.receive_result(task, current_tradie) end)
+    final_tradie.results |> Enum.reverse
   end
 end
