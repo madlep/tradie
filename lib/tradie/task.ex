@@ -5,8 +5,10 @@ defmodule Tradie.Task do
     defstruct [:work_ref, :task_ref, :result]
   end
 
+  alias Tradie.Task, as: TTask
+
   def create_task(work_ref, supervisor, fun) do
-    task = %Tradie.Task{
+    task = %TTask{
       task_ref: make_ref,
       caller: self,
       fun: fun
@@ -17,7 +19,7 @@ defmodule Tradie.Task do
     task
   end
 
-  def run_task(%Tradie.Task{task_ref: task_ref, caller: caller, fun: fun}, work_ref) do
+  def run_task(%TTask{task_ref: task_ref, caller: caller, fun: fun}, work_ref) do
     send(caller, %Result{
       work_ref: work_ref,
       task_ref: task_ref,
@@ -27,7 +29,7 @@ defmodule Tradie.Task do
 
   defp do_run_task(fun) when is_function(fun), do: fun.()
 
-  def receive_result(%Tradie.Task{task_ref: task_ref}, tradie = %Tradie{work_ref: work_ref, timed_out: false, results: results}) do
+  def receive_result(%TTask{task_ref: task_ref}, tradie = %Tradie{work_ref: work_ref, timed_out: false, results: results}) do
     receive do
       %Result{work_ref: ^work_ref, task_ref: ^task_ref, result: result} ->
         %Tradie{tradie | results: [{:ok, result}|results]}
@@ -36,7 +38,7 @@ defmodule Tradie.Task do
     end
   end
 
-  def receive_result(%Tradie.Task{task_ref: task_ref}, tradie = %Tradie{work_ref: work_ref, timed_out: true, results: results}) do
+  def receive_result(%TTask{task_ref: task_ref}, tradie = %Tradie{work_ref: work_ref, timed_out: true, results: results}) do
     receive do
       %Result{work_ref: ^work_ref, task_ref: ^task_ref, result: result} ->
         %Tradie{tradie | results: [{:ok, result}|results]}
